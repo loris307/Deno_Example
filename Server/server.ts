@@ -14,6 +14,7 @@ const messages = [
 ];
 
 
+app.use(oakCors());
 
 router
   .get('/get-messages', (context) => {
@@ -21,10 +22,9 @@ router
     context.response.body = html;
   })
   .post('/add-messages', async (context) => {
-    const body = await context.request.body({ type: 'json' });
-    console.log(body.value); // Hier sollte der Wert sichtbar sein
-    const text = body.value.message;
-    const newMessage = { id: messages.length + 1, text};
+    const body = await context.request.body({ type: 'json' }).value;
+    const message = body.message;
+    const newMessage = { id: messages.length + 1, text: message};
     messages.push(newMessage);
     const html = messages.map(m => `<div>${m.text}</div>`).join('');
     context.response.body = html;
@@ -45,7 +45,6 @@ router
 
 
 app.use(router.routes());
-app.use(oakCors());
 app.use(router.allowedMethods());
 
 
