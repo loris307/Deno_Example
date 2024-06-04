@@ -14,8 +14,6 @@ const messages = [
 ];
 
 
-app.use(oakCors());
-
 router
   .get('/get-messages', (context) => {
     const html = messages.map(m => `<div>${m.text}</div>`).join('');
@@ -43,7 +41,7 @@ router
 
 
 
-
+app.use(oakCors());
 app.use(router.routes());
 app.use(router.allowedMethods());
 
