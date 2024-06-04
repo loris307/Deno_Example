@@ -1,9 +1,11 @@
-import { Application, Router } from "https://deno.land/x/oak/mod.ts";
+import { Application, Router } from "https://deno.land/x/oak@v11.1.0/mod.ts";
 import { oakCors } from "https://deno.land/x/cors/mod.ts";
+
 
 const port = 8080;
 const app = new Application();
 const router = new Router();
+
 
 const messages = [
   { id: 1, text: "Diese Nachricht kommt vom Server" },
@@ -11,18 +13,23 @@ const messages = [
   { id: 3, text: "DIE NICHT (nein spaß, die auch)" }
 ];
 
+
+
 router
   .get('/get-messages', (context) => {
     const html = messages.map(m => `<div>${m.text}</div>`).join('');
     context.response.body = html;
   })
   .post('/add-messages', async (context) => {
-    const body = context.request.body({ type: "json" }).value;
-    const newMessage = { id: messages.length + 1, text: body.text };
+    const body = await context.request.body({ type: 'json' });
+    console.log(body.value); // Hier sollte der Wert sichtbar sein
+    const text = body.value.message;
+    const newMessage = { id: messages.length + 1, text};
     messages.push(newMessage);
     const html = messages.map(m => `<div>${m.text}</div>`).join('');
     context.response.body = html;
   })
+  
   .delete('/delete-last-message', (context) => {
     if (messages.length > 0) {
       messages.pop();
@@ -34,9 +41,13 @@ router
     }
   });
 
-app.use(oakCors());
+
+
+
 app.use(router.routes());
+app.use(oakCors());
 app.use(router.allowedMethods());
+
 
 console.log(`Server läuft auf http://localhost:${port}`);
 await app.listen({ port });
