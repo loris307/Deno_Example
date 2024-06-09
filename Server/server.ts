@@ -1,5 +1,5 @@
 import { Application, Router } from "https://deno.land/x/oak@v11.1.0/mod.ts";
-import { oakCors } from "https://deno.land/x/cors/mod.ts";
+import { oakCors } from "https://deno.land/x/cors@v1.2.2/mod.ts";
 
 
 const port = 8080;
@@ -19,6 +19,7 @@ router
     const html = messages.map(m => `<div>${m.text}</div>`).join('');
     context.response.body = html;
   })
+  
   .post('/add-messages', async (context) => {
     const body = await context.request.body({ type: 'json' }).value;
     const message = body.message;
@@ -31,6 +32,7 @@ router
   .delete('/delete-last-message', (context) => {
     if (messages.length > 0) {
       messages.pop();
+      let param = context.params ;
       const html = messages.map(m => `<div>${m.text}</div>`).join('');
       context.response.body = html;
     } else {
